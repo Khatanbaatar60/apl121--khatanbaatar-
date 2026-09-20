@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="seminar 2-2 a"/>
+        <attribute name="authors" value="user"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2026-09-20 04:29:53 PM"/>
+        <attribute name="created" value="dXNlcjtERVNLVE9QLTc2TjJRQzc7MjAyNi0wOS0yMDswNDoyMjozMiBQTTsyNzQ4"/>
+        <attribute name="edited" value="dXNlcjtERVNLVE9QLTc2TjJRQzc7MjAyNi0wOS0yMDswNDoyOTo1MyBQTTsxOzI4NjY="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="a" type="Integer" array="False" size=""/>
+            <declare name="b" type="Integer" array="False" size=""/>
+            <declare name="niilber" type="Integer" array="False" size=""/>
+            <input variable="a"/>
+            <input variable="b"/>
+            <assign variable="niilber" expression="a+b"/>
+            <output expression="niilber" newline="True"/>
+        </body>
+    </function>
+</flowgorithm>
