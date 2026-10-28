@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="3.0">
+    <attributes>
+        <attribute name="name" value="Таксины тариф"/>
+        <attribute name="authors" value="M.Batmend"/>
+        <attribute name="about" value="APL121 — таксины үнэ (энгийн хувилбар)"/>
+        <attribute name="saved" value="2026-10-28 05:30:00 PM"/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="baseFare" type="Real" array="False" size=""/>
+            <declare name="perKm" type="Real" array="False" size=""/>
+            <declare name="perMin" type="Real" array="False" size=""/>
+            <declare name="nightPct" type="Real" array="False" size=""/>
+            <declare name="km" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <declare name="j" type="Integer" array="False" size=""/>
+            <declare name="r" type="Integer" array="False" size=""/>
+            <declare name="night" type="Integer" array="False" size=""/>
+            <declare name="p" type="Real" array="False" size=""/>
+            <declare name="dist" type="Real" array="True" size="3"/>
+            <declare name="wait" type="Real" array="True" size="3"/>
+            <declare name="price" type="Real" array="True" size="3"/>
+            <declare name="rank" type="Integer" array="True" size="3"/>
+            <comment text="Тариф (жишээ утга — даалгаварт өөр тариф байвал эндээс солино)"/>
+            <assign variable="baseFare" expression="1000"/>
+            <assign variable="perKm" expression="1500"/>
+            <assign variable="perMin" expression="200"/>
+            <assign variable="nightPct" expression="20"/>
+            <comment text="1. 1–10 км-ийн үнийн хүснэгт"/>
+            <output expression="&quot;Км | Өдөр | Шөнө&quot;" newline="True"/>
+            <for variable="km" start="1" end="10" direction="inc" step="1">
+                <assign variable="p" expression="baseFare + km * perKm"/>
+                <output expression="km &amp; &quot; | &quot; &amp; p &amp; &quot; | &quot; &amp; (p + p * nightPct / 100)" newline="True"/>
+            </for>
+            <comment text="2. 3 аяллын үнэ"/>
+            <for variable="i" start="0" end="2" direction="inc" step="1">
+                <output expression="&quot;Аялал &quot; &amp; (i + 1) &amp; &quot; — зай (км): &quot;" newline="False"/>
+                <input variable="dist[i]"/>
+                <output expression="&quot;Хүлээлэг (мин): &quot;" newline="False"/>
+                <input variable="wait[i]"/>
+                <output expression="&quot;Шөнө үү? (1 = тийм, 0 = үгүй): &quot;" newline="False"/>
+                <input variable="night"/>
+                <assign variable="price[i]" expression="baseFare + dist[i] * perKm + wait[i] * perMin"/>
+                <if expression="night == 1">
+                    <then>
+                        <assign variable="price[i]" expression="price[i] + price[i] * nightPct / 100"/>
+                    </then>
+                    <else>
+                    </else>
+                </if>
+                <output expression="&quot;Үнэ: &quot; &amp; price[i] &amp; &quot;₮&quot;" newline="True"/>
+            </for>
+            <comment text="3. Эрэмбэ: өөрөөсөө хямд аялал хэд байна вэ гэж тоолно"/>
+            <for variable="i" start="0" end="2" direction="inc" step="1">
+                <assign variable="rank[i]" expression="1"/>
+                <for variable="j" start="0" end="2" direction="inc" step="1">
+                    <if expression="price[j] &lt; price[i]">
+                        <then>
+                            <assign variable="rank[i]" expression="rank[i] + 1"/>
+                        </then>
+                        <else>
+                        </else>
+                    </if>
+                </for>
+            </for>
+            <output expression="&quot;--- Хямдаас үнэтэй рүү ---&quot;" newline="True"/>
+            <for variable="r" start="1" end="3" direction="inc" step="1">
+                <for variable="i" start="0" end="2" direction="inc" step="1">
+                    <if expression="rank[i] == r">
+                        <then>
+                            <output expression="r &amp; &quot;. Аялал &quot; &amp; (i + 1) &amp; &quot;: &quot; &amp; price[i] &amp; &quot;₮&quot;" newline="True"/>
+                        </then>
+                        <else>
+                        </else>
+                    </if>
+                </for>
+            </for>
+        </body>
+    </function>
+</flowgorithm>

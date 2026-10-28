@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="3.0">
+    <attributes>
+        <attribute name="name" value="Хадгаламжийн тооцоолуур"/>
+        <attribute name="authors" value="M.Batmend"/>
+        <attribute name="about" value="APL121 — сарын хүүтэй хадгаламж, 3 банкны харьцуулалт"/>
+        <attribute name="saved" value="2026-10-28 05:20:00 PM"/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <comment text="Сарын хүүтэй хадгаламж: сар бүрийн үлдэгдлийн хүснэгт, зорилгод хүрэх сарыг давталтаар хайх, 3 банкны саналыг эрэмбэлэх"/>
+            <declare name="principal" type="Real" array="False" size=""/>
+            <declare name="deposit" type="Real" array="False" size=""/>
+            <declare name="goal" type="Real" array="False" size=""/>
+            <declare name="bal" type="Real" array="False" size=""/>
+            <declare name="interest" type="Real" array="False" size=""/>
+            <declare name="n" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <declare name="j" type="Integer" array="False" size=""/>
+            <declare name="m" type="Integer" array="False" size=""/>
+            <declare name="r" type="Integer" array="False" size=""/>
+            <declare name="best" type="Integer" array="False" size=""/>
+            <declare name="bankName" type="String" array="True" size="3"/>
+            <declare name="rate" type="Real" array="True" size="3"/>
+            <declare name="months" type="Integer" array="True" size="3"/>
+            <declare name="balN" type="Real" array="True" size="3"/>
+            <declare name="sortKey" type="Integer" array="True" size="3"/>
+            <declare name="rank" type="Integer" array="True" size="3"/>
+            <comment text="1. Оролт — do-while: эхлээд асууж, дараа нь шалгана (буруу бол дахин асууна)"/>
+            <do expression="principal &lt; 0">
+                <output expression="&quot;Анхны хадгаламж (₮): &quot;" newline="False"/>
+                <input variable="principal"/>
+            </do>
+            <do expression="deposit &lt; 0">
+                <output expression="&quot;Сар бүр нэмж хийх дүн (₮, 0 байж болно): &quot;" newline="False"/>
+                <input variable="deposit"/>
+            </do>
+            <do expression="goal &lt;= 0">
+                <output expression="&quot;Зорилтот дүн (₮): &quot;" newline="False"/>
+                <input variable="goal"/>
+            </do>
+            <do expression="n &lt; 1">
+                <output expression="&quot;Хүснэгтэд харуулах сарын тоо: &quot;" newline="False"/>
+                <input variable="n"/>
+            </do>
+            <comment text="2. 3 банкны саналыг массивт оруулах — for i = 0 .. 2"/>
+            <for variable="i" start="0" end="2" direction="inc" step="1">
+                <output expression="&quot;--- &quot; &amp; (i + 1) &amp; &quot;-р банк ---&quot;" newline="True"/>
+                <output expression="&quot;Банкны нэр: &quot;" newline="False"/>
+                <input variable="bankName[i]"/>
+                <do expression="rate[i] &lt; 0">
+                    <output expression="&quot;Сарын хүү (%): &quot;" newline="False"/>
+                    <input variable="rate[i]"/>
+                </do>
+            </for>
+            <comment text="3. Банк бүрээр тооцоолох"/>
+            <for variable="i" start="0" end="2" direction="inc" step="1">
+                <comment text="3а. Сар бүрийн үлдэгдлийн хүснэгт — давталтын тоо мэдэгдэж байгаа тул for"/>
+                <output expression="&quot;&quot;" newline="True"/>
+                <output expression="&quot;===== &quot; &amp; bankName[i] &amp; &quot; — сарын хүү &quot; &amp; rate[i] &amp; &quot;% =====&quot;" newline="True"/>
+                <output expression="&quot;Сар | Эхний үлдэгдэл | Хүү | Нэмэлт | Эцсийн үлдэгдэл&quot;" newline="True"/>
+                <assign variable="bal" expression="principal"/>
+                <for variable="m" start="1" end="n" direction="inc" step="1">
+                    <assign variable="interest" expression="bal * rate[i] / 100"/>
+                    <output expression="m &amp; &quot; | &quot; &amp; ToFixed(bal, 2) &amp; &quot; | &quot; &amp; ToFixed(interest, 2) &amp; &quot; | &quot; &amp; ToFixed(deposit, 2) &amp; &quot; | &quot; &amp; ToFixed(bal + interest + deposit, 2)" newline="True"/>
+                    <assign variable="bal" expression="bal + interest + deposit"/>
+                </for>
+                <assign variable="balN[i]" expression="bal"/>
+                <comment text="3б. Зорилгод хүрэх сарыг хайх — хэдэн удаа давтах нь өгөгдлөөс хамаарах тул while. m &lt; 600 нь төгсгөлгүй давталтаас хамгаална"/>
+                <assign variable="bal" expression="principal"/>
+                <assign variable="m" expression="0"/>
+                <while expression="bal &lt; goal &amp;&amp; m &lt; 600">
+                    <assign variable="bal" expression="bal + bal * rate[i] / 100 + deposit"/>
+                    <assign variable="m" expression="m + 1"/>
+                </while>
+                <if expression="bal &gt;= goal">
+                    <then>
+                        <assign variable="months[i]" expression="m"/>
+                        <assign variable="sortKey[i]" expression="m"/>
+                        <output expression="&quot;→ Зорилгод &quot; &amp; m &amp; &quot; сард хүрнэ&quot;" newline="True"/>
+                    </then>
+                    <else>
+                        <assign variable="months[i]" expression="-1"/>
+                        <assign variable="sortKey[i]" expression="999999"/>
+                        <output expression="&quot;→ 50 жилийн дотор зорилгод хүрэхгүй&quot;" newline="True"/>
+                    </else>
+                </if>
+            </for>
+            <comment text="4. Эрэмбэ тогтоох — filter + count: банк i-ээс илүү банк хэд байна вэ? rank = 1 + тэр тоо"/>
+            <comment text="Илүү гэдэг нь: цөөн сард хүрэх; тэнцвэл n сарын дараах үлдэгдэл их; бүгд тэнцвэл эхэнд оруулсан нь"/>
+            <for variable="i" start="0" end="2" direction="inc" step="1">
+                <assign variable="rank[i]" expression="1"/>
+                <for variable="j" start="0" end="2" direction="inc" step="1">
+                    <if expression="j != i &amp;&amp; (sortKey[j] &lt; sortKey[i] || (sortKey[j] == sortKey[i] &amp;&amp; balN[j] &gt; balN[i]) || (sortKey[j] == sortKey[i] &amp;&amp; balN[j] == balN[i] &amp;&amp; j &lt; i))">
+                        <then>
+                            <assign variable="rank[i]" expression="rank[i] + 1"/>
+                        </then>
+                        <else>
+                        </else>
+                    </if>
+                </for>
+            </for>
+            <comment text="5. Эрэмбийн дагуу хэвлэх: r = 1, 2, 3 байр бүрт тухайн байртай банкийг олж хэвлэнэ"/>
+            <output expression="&quot;&quot;" newline="True"/>
+            <output expression="&quot;===== ЭРЭМБЭ (зорилгод хамгийн хурдан хүрэх нь 1-рт) =====&quot;" newline="True"/>
+            <assign variable="best" expression="0"/>
+            <for variable="r" start="1" end="3" direction="inc" step="1">
+                <for variable="i" start="0" end="2" direction="inc" step="1">
+                    <if expression="rank[i] == r">
+                        <then>
+                            <if expression="r == 1">
+                                <then>
+                                    <assign variable="best" expression="i"/>
+                                </then>
+                                <else>
+                                </else>
+                            </if>
+                            <if expression="months[i] == -1">
+                                <then>
+                                    <output expression="r &amp; &quot;. &quot; &amp; bankName[i] &amp; &quot; | &quot; &amp; rate[i] &amp; &quot;%/сар | зорилгод хүрэхгүй | &quot; &amp; n &amp; &quot; сарын дараа: &quot; &amp; ToFixed(balN[i], 2) &amp; &quot;₮&quot;" newline="True"/>
+                                </then>
+                                <else>
+                                    <output expression="r &amp; &quot;. &quot; &amp; bankName[i] &amp; &quot; | &quot; &amp; rate[i] &amp; &quot;%/сар | &quot; &amp; months[i] &amp; &quot; сар (≈&quot; &amp; ToFixed(months[i] / 12.0, 1) &amp; &quot; жил) | &quot; &amp; n &amp; &quot; сарын дараа: &quot; &amp; ToFixed(balN[i], 2) &amp; &quot;₮&quot;" newline="True"/>
+                                </else>
+                            </if>
+                        </then>
+                        <else>
+                        </else>
+                    </if>
+                </for>
+            </for>
+            <output expression="&quot;Хамгийн ашигтай санал: &quot; &amp; bankName[best]" newline="True"/>
+        </body>
+    </function>
+</flowgorithm>

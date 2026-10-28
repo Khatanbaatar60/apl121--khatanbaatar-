@@ -1,0 +1,6 @@
+************************************* Invoked: Wed Oct 28 23:05:27 2026
+[0] Arguments: E:\ufe\apl assignment\msys2-x86_64-20260927.exe
+[7] Operations sanity check succeeded.
+[8] Warning: Cannot create lock file "C:\Users\user\AppData\Local\Temp\msys2-x86_64-202609271234865.lock": The process cannot access the file because it is being used by another process.
+ (0x00000020)
+[50] UnableToStart : Unable to start installer : Another msys2-x86_64-20260927 instance is already running. Wait until it finishes, close it, or restart your system.
